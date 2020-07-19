@@ -19,6 +19,16 @@ class AsteroidRepository extends ServiceEntityRepository
         parent::__construct($registry, Asteroid::class);
     }
 
+    /**
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return Asteroid[]
+     */
+    public function findAllAsteroidWithPagination(int $limit, int $offset): iterable
+    {
+        return $this->findBy([], [], $limit, $offset);
+    }
     // /**
     //  * @return Asteroid[] Returns an array of Asteroid objects
     //  */

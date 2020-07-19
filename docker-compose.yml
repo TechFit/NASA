@@ -4,6 +4,7 @@ services:
     db:
       image: mysql:8.0
       working_dir: /application
+      restart: always
       volumes:
         - .:/application
         - ./docker/mysql-init-files:/docker-entrypoint-initdb.d
@@ -14,6 +15,7 @@ services:
         - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
       ports:
         - "12007:3306"
+      network_mode: bridge
 
     webserver:
       image: nginx:alpine
@@ -24,7 +26,8 @@ services:
       ports:
        - "12002:80"
       links:
-        - db
+        - php
+      network_mode: bridge
 
     php:
       build: docker/php-fpm
@@ -34,3 +37,4 @@ services:
         - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
       links:
         - db
+      network_mode: bridge
