@@ -53,15 +53,16 @@ class NeoController extends AbstractFOSRestController
     }
 
     /**
-     * @param Request $request
+     * @Rest\Route("/fastest", name="fastest")
      *
-     * @Rest\Route("/fastest/{hazardous}", name="fastest", defaults={"hazardous": false})
+     * @Rest\QueryParam(name="hazardous", default="false")
      *
      * @return Response
      */
     public function getFastestAction(Request $request): Response
     {
-        $isHazardous = $request->attributes->get('hazardous');
+        $isHazardous = filter_var($request->get('hazardous'), FILTER_VALIDATE_BOOLEAN);
+
         /** @var AsteroidRepository $asteroidRepository */
         $asteroidRepository = $this->getDoctrine()->getRepository(Asteroid::class);
 
@@ -75,13 +76,17 @@ class NeoController extends AbstractFOSRestController
     /**
      * @param Request $request
      *
-     * @Rest\Route("/best-month/{hazardous}", name="best", defaults={"hazardous": false})
+     * @Rest\Route("/best-month/", name="best")
+     *
+     * @Rest\QueryParam(name="hazardous", default="false")
      *
      * @return Response
+     *
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getBestMonthAction(Request $request): Response
     {
-        $isHazardous = $request->attributes->get('hazardous');
+        $isHazardous = filter_var($request->get('hazardous'), FILTER_VALIDATE_BOOLEAN);
 
         /** @var AsteroidRepository $asteroidRepository */
         $asteroidRepository = $this->getDoctrine()->getRepository(Asteroid::class);
