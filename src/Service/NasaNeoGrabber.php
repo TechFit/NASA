@@ -27,8 +27,7 @@ class NasaNeoGrabber
     public function __construct(
         HttpClientInterface $client,
         ParameterBagInterface $params
-    )
-    {
+    ) {
         $this->client = $client;
         $this->apiKey = $params->get('app.nasa_api_key');
     }

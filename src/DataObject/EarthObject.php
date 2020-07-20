@@ -28,8 +28,7 @@ class EarthObject
         float $kilometers_per_hour,
         \DateTime $date,
         bool $is_hazardous
-    )
-    {
+    ) {
         $this->neo_reference_id = $neo_reference_id;
         $this->name = $name;
         $this->kilometers_per_hour = $kilometers_per_hour;

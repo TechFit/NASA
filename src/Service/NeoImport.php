@@ -35,8 +35,7 @@ class NeoImport
         ManagerRegistry $managerRegistry,
         EntityManagerInterface $em,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->nasaNeoGrabber = $nasaNeoGrabber;
         $this->asteroidRepository = $managerRegistry->getRepository(Asteroid::class);
         $this->em = $em;
