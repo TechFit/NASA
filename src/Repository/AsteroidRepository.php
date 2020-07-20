@@ -34,7 +34,7 @@ class AsteroidRepository extends ServiceEntityRepository
      */
     public function findAllAsteroidWithPagination(int $limit, int $offset): iterable
     {
-        return $this->findBy([], [], $limit, $offset);
+        return $this->findBy(['is_hazardous' => true], [], $limit, $offset);
     }
 
     /**
