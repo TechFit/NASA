@@ -5,7 +5,6 @@
 2. docker exec -it nasa_php_1 bash
    - composer install
    - php bin/console doctrine:migrations:migrate
-   - php bin/phpunit
 3. Enjoy
 
 Endpoints:  
