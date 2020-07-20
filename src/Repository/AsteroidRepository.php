@@ -3,10 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Asteroid;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
+ * Class AsteroidRepository
+ *
  * @method Asteroid|null find($id, $lockMode = null, $lockVersion = null)
  * @method Asteroid|null findOneBy(array $criteria, array $orderBy = null)
  * @method Asteroid[]    findAll()
@@ -14,6 +16,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class AsteroidRepository extends ServiceEntityRepository
 {
+    /**
+     * AsteroidRepository constructor.
+     *
+     * @param ManagerRegistry $registry
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Asteroid::class);
@@ -29,32 +36,26 @@ class AsteroidRepository extends ServiceEntityRepository
     {
         return $this->findBy([], [], $limit, $offset);
     }
-    // /**
-    //  * @return Asteroid[] Returns an array of Asteroid objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Asteriod
+    /**
+     * @param bool $isHazardous
+     *
+     * @return int
+     *
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function findMonthWithMostAsteroids(bool $isHazardous): int
     {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = "select MONTH(date) as month from asteroid
+            where is_hazardous = ?
+            GROUP BY MONTH(date)
+            ORDER BY COUNT(*) DESC
+            LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(1, $isHazardous);
+        $stmt->execute();
+
+        return $stmt->fetchColumn();
     }
-    */
 }

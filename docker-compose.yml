@@ -4,7 +4,6 @@ services:
     db:
       image: mysql:8.0
       working_dir: /application
-      restart: always
       volumes:
         - .:/application
         - ./docker/mysql-init-files:/docker-entrypoint-initdb.d

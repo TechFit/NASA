@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Asteroid;
 use App\Repository\AsteroidRepository;
+use App\Service\NeoImport;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,18 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class NeoController extends AbstractFOSRestController
 {
+    private NeoImport $neoImport;
+
+    /**
+     * NeoController constructor.
+     *
+     * @param NeoImport $neoImport
+     */
+    public function __construct(NeoImport $neoImport)
+    {
+        $this->neoImport = $neoImport;
+    }
+
     /**
      * @param Request $request
      *
@@ -24,14 +37,16 @@ class NeoController extends AbstractFOSRestController
      */
     public function getHazardousAction(Request $request): Response
     {
+        $this->neoImport->importNeosForLastThreeDays();
+
         $limit = $request->attributes->get('limit');
         $offset = $request->attributes->get('offset');
+
         /** @var AsteroidRepository $asteroidRepository */
         $asteroidRepository = $this->getDoctrine()->getRepository(Asteroid::class);
 
         $view = $this->view()->setData([
-            'status' => 'ok',
-            'asteroids' => $asteroidRepository->findAllAsteroidWithPagination($limit, $offset),
+            'result' => $asteroidRepository->findAllAsteroidWithPagination($limit, $offset),
         ]);
 
         return $this->handleView($view);
@@ -40,7 +55,7 @@ class NeoController extends AbstractFOSRestController
     /**
      * @param Request $request
      *
-     * @Rest\Route("/fastest/{hazardous}", name="hazardous", defaults={"hazardous": false})
+     * @Rest\Route("/fastest/{hazardous}", name="fastest", defaults={"hazardous": false})
      *
      * @return Response
      */
@@ -51,8 +66,7 @@ class NeoController extends AbstractFOSRestController
         $asteroidRepository = $this->getDoctrine()->getRepository(Asteroid::class);
 
         $view = $this->view()->setData([
-            'status' => 'ok',
-            'asteroids' => 'fastest'
+            'result' => $asteroidRepository->findBy(['is_hazardous' => $isHazardous])
         ]);
 
         return $this->handleView($view);
@@ -61,7 +75,7 @@ class NeoController extends AbstractFOSRestController
     /**
      * @param Request $request
      *
-     * @Rest\Route("/best-month/{hazardous}", name="hazardous", defaults={"hazardous": false})
+     * @Rest\Route("/best-month/{hazardous}", name="best", defaults={"hazardous": false})
      *
      * @return Response
      */
@@ -73,8 +87,7 @@ class NeoController extends AbstractFOSRestController
         $asteroidRepository = $this->getDoctrine()->getRepository(Asteroid::class);
 
         $view = $this->view()->setData([
-            'status' => 'ok',
-            'asteroids' => 'best'
+            'result' => $asteroidRepository->findMonthWithMostAsteroids($isHazardous)
         ]);
 
         return $this->handleView($view);
